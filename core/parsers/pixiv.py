@@ -449,6 +449,16 @@ class PixivParser(BaseParser):
             return await self._handle_manga(pid, body)
         return await self._handle_illust(pid, body)
 
+    @handle("pixiv.net/member_illust.php",
+            r"pixiv\.net/member_illust\.php[^\"'\s]*illust_id=(?P<pid>\d+)")
+    async def _handle_member_illust(self, searched: Match[str]) -> ParseResult:
+        pid = searched.group("pid")
+        body = await self.api.get_illust_detail(pid)
+        illust_type = int(body.get("illustType", 0))
+        if illust_type == 1:
+            return await self._handle_manga(pid, body)
+        return await self._handle_illust(pid, body)
+
     @handle("pid", r"(?<![a-zA-Z])pid\s*(?P<pid>\d+)")
     @handle("pixivid", r"(?<![a-zA-Z])pixivid\s*(?P<pid>\d+)")
     async def _handle_pid(self, searched: Match[str]) -> ParseResult:
