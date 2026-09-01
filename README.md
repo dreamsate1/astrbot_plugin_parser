@@ -6,6 +6,7 @@
 # astrbot_plugin_parser
 
 _✨ 链接解析器 ✨_  
+本人借助ai修改后自用，修改国外ip风控B站解析导致失败问题，修复pixiv不支持旧版解析链接问题
 
 [![License](https://img.shields.io/badge/License-MIT-green.svg)](https://opensource.org/licenses/MIT)
 [![Python 3.10+](https://img.shields.io/badge/Python-3.10%2B-blue.svg)](https://www.python.org/)
