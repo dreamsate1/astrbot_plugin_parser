@@ -13,6 +13,16 @@ from ..exception import ParseException
 from .base import BaseParser, handle
 
 
+TWITTER_MEDIA_HEADERS: dict[str, str] = {
+    "User-Agent": (
+        "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 "
+        "(KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36"
+    ),
+    "Referer": "https://twitter.com/",
+}
+"""twimg CDN 对请求头敏感：老 UA 或 xdown Origin/Referer 会触发 403"""
+
+
 class TwitterParser(BaseParser):
     platform: ClassVar[Platform] = Platform(name="twitter", display_name="推特")
 
@@ -116,7 +126,11 @@ class TwitterParser(BaseParser):
         for p in photos:
             u = p.get("url", "")
             if u:
-                contents.append(self.create_image_contents([u])[0])
+                contents.append(
+                    self.create_image_contents(
+                        [u], headers=TWITTER_MEDIA_HEADERS
+                    )[0]
+                )
 
         # 视频：取最高码率 variant
         for v in videos:
@@ -132,7 +146,9 @@ class TwitterParser(BaseParser):
             if best:
                 contents.append(
                     self.create_video_content(
-                        best[1], cover_url=v.get("thumbnail_url") or None
+                        best[1],
+                        cover_url=v.get("thumbnail_url") or None,
+                        headers=TWITTER_MEDIA_HEADERS,
                     )
                 )
 
@@ -140,6 +156,7 @@ class TwitterParser(BaseParser):
             name=author.get("name") or author.get("screen_name") or "推特用户",
             avatar_url=author.get("avatar_url"),
             description=author.get("description"),
+            headers=TWITTER_MEDIA_HEADERS,
         )
 
         send_groups = [
